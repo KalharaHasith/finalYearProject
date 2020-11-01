@@ -13,7 +13,7 @@ auth_handler.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth_handler)
 
-search_term = 'The Croods'
+search_term = 'harry potter and the order of the phoenix'
 tweet_amount = 200
 
 List_tweets = []
