@@ -44,7 +44,7 @@ def count(request):
 
     for processed_tweet in list_tweet:
         search_sentiment = s.sentiment(processed_tweet)
-        print(f'{processed_tweet}   : your confidence = {search_sentiment}')
+        # print(f'{processed_tweet}   : your confidence = {search_sentiment}')
 
         if search_sentiment[0] == 'pos' and search_sentiment[1] >= 0.8:
             positive_tweet += 1
@@ -59,3 +59,7 @@ def count(request):
     print(f'Rating for your movie is {rating}')
 
     return render(request, 'count.html', {'movieName': movie_name, 'rating': rating })
+
+
+def about(request):
+    return render(request, 'about.html')
