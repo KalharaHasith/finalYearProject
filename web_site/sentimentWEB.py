@@ -1,8 +1,6 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-# from .sentimentWEB import calculateRating
-import pickled as s
 import tweepy
+import pickled as s
+import sys
 import math
 
 api_key = 'cmXgPsjaKK9qRIkFUJZWIGQgw'
@@ -15,24 +13,51 @@ auth_handler.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth_handler)
 
+search_term = 'harry potter and the order of the phoenix'
+tweet_amount = 200
 
-def home(request):
-    return render(request, 'home.html')
+List_tweets = []
+tweets = tweepy.Cursor(api.search, q=search_term, lang='en').items(tweet_amount)
 
 
-def count(request):
-    # rated_value = calculateRating()
-    tweet_amount = 200
-    movie_name = request.GET['movie_name']
-    # List_tweets = []
-    tweets = tweepy.Cursor(api.search, q=movie_name, lang='en').items(tweet_amount)
 
+# for tweet in tweets:
+#     cleared_rt = tweet.text.replace('RT', '')
+#     if cleared_rt.startswith(' @'):
+#         position = cleared_rt.index(':')
+#         cleared_rt = cleared_rt[position+2:]
+#     if cleared_rt.startswith('@'):
+#         position = cleared_rt.index('')
+#         cleared_rt = cleared_rt[position+2:]
+#     list_tweet.append(cleared_rt)
+#     # print(tweet.text)
+# # print(list_tweet)
+#
+# for rt in list_tweet:
+#     ef = s.sentiment(rt)
+#     print(f'{rt}   : your confidence = {ef}')
+#
+#     if ef[0] == 'pos':
+#         positive_tweet += 1
+#     elif ef[0] == 'neg':
+#         negative_tweet += 1
+#
+# print(positive_tweet)
+# print(negative_tweet)
+#
+# rating = (positive_tweet/tweet_amount) * 10
+# print(f'Rating for your movie is {rating}')
+
+'''
+Need to remove youtube links from tweets ;)
+'''
+
+
+def calculateRating():
     list_tweet = []
     polarity = 0
     positive_tweet = 0
     negative_tweet = 0
-    # print(movie_name)
-
     for tweet in tweets:
         tweet_text = tweet.text
         if 'RT @' not in tweet_text:  # to avoid retweet content(duplicate tweets0
@@ -44,13 +69,13 @@ def count(request):
 
     for processed_tweet in list_tweet:
         search_sentiment = s.sentiment(processed_tweet)
-        print(f'{processed_tweet}   : your confidence = {search_sentiment}')
+        # print(f'{processed_tweet}   : your confidence = {search_sentiment}')
 
         if search_sentiment[0] == 'pos' and search_sentiment[1] >= 0.8:
             positive_tweet += 1
         elif search_sentiment[0] == 'neg' and search_sentiment[1] >= 0.8:
             negative_tweet += 1
-            neg = math.floor(negative_tweet / 20)  # because negative tweet count is too high
+            neg = math.floor(negative_tweet/10)  # because negative tweet count is too high
 
     print(f'Number of positive tweets: {positive_tweet}')
     print(f'Number of negative tweets: {negative_tweet}')
@@ -58,4 +83,8 @@ def count(request):
     rating = round((positive_tweet / (positive_tweet + neg)) * 10, 2)  # round the value to two decimal points
     print(f'Rating for your movie is {rating}')
 
-    return render(request, 'count.html', {'movieName': movie_name, 'rating': rating })
+    rounded_value = round(rating, 1)
+
+    return rounded_value
+
+# calculateRating()
